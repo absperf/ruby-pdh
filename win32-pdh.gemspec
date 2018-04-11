@@ -2,7 +2,7 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'win32-pdh'
-  spec.version    = '0.0.1'
+  spec.version    = '0.0.2'
   spec.authors    = ['Taylor C. Richberger']
   spec.license    = 'MIT'
   spec.email      = 'tcr@absolute-performance.com'
