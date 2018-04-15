@@ -18,11 +18,19 @@ module Win32
       typedef :uint, :winbool
 
 :pdh_status
-      attach_function :PdhOpenQueryW, [:buffer_in, :buffer_in, :buffer_out], :pdh_status
+      attach_function :PdhAddCounterW, [:pdh_hquery, :buffer_in, :buffer_in, :buffer_out], :pdh_status
+      attach_function :PdhCollectQueryData, [:pdh_hquery], :pdh_status
       attach_function :PdhCloseQuery, [:buffer_in], :pdh_status
-      attach_function :PdhEnumObjectsW, [:buffer_in, :buffer_in, :buffer_out, :buffer_inout, :uint, :winbool], :pdh_status
       attach_function :PdhEnumObjectItemsW, [:buffer_in, :buffer_in, :buffer_in, :buffer_out, :buffer_inout, :buffer_out, :buffer_inout, :uint, :uint], :pdh_status
+      attach_function :PdhEnumObjectsW, [:buffer_in, :buffer_in, :buffer_out, :buffer_inout, :uint, :winbool], :pdh_status
       attach_function :PdhExpandWildCardPathW, [:buffer_in, :buffer_in, :buffer_out, :buffer_inout, :uint], :pdh_status
+      attach_function :PdhGetFormattedCounterArray, [:pdh_hcounter, :uint, :buffer_inout, :buffer_out, :buffer_out], :pdh_status
+      attach_function :PdhGetFormattedCounterValue, [:pdh_hcounter, :uint, :buffer_out, :buffer_out], :pdh_status
+      attach_function :PdhGetRawCounterArray, [:pdh_hcounter, :buffer_inout, :buffer_out, :buffer_out], :pdh_status
+      attach_function :PdhGetRawCounterValue, [:pdh_hcounter, :buffer_out, :buffer_out], :pdh_status
+      attach_function :PdhIsRealTimeQuery, [:pdh_hquery], :winbool
+      attach_function :PdhOpenQueryW, [:buffer_in, :buffer_in, :buffer_out], :pdh_status
+      attach_function :PdhRemoveCounter, [:pdh_hcounter], :pdh_status
     end
 
     ##

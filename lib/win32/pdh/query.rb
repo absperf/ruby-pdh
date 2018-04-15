@@ -1,8 +1,9 @@
 require 'win32/pdh'
+require 'win32/pdh/counter'
 
 module Win32
   module Pdh
-    module Query
+    class Query
       def initialize(source=nil)
         source =
           if source.nil?
@@ -11,13 +12,15 @@ module Win32
             (source + "\0").encode('UTF-16LE')
           end
         handle_pointer = FFI::MemoryPointer.new(:pointer)
-        PdhFFI.PdhOpenQueryW(source, FFI::Pointer::NULL, handle_pointer)
+        status = PdhFFI.PdhOpenQueryW(source, FFI::Pointer::NULL, handle_pointer)
+        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
         @handle = handle_pointer.read_pointer
       end
       
       def close
         # Only allow closing once
-        PdhFFI.PdhCloseQuery(@handle) unless @handle.nil?
+        status = PdhFFI.PdhCloseQuery(@handle) unless @handle.nil?
+        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
         @handle = nil
       end
 
@@ -41,7 +44,19 @@ module Win32
         end
       end
 
-      private_class_method :new
+      def real_time?
+        PdhFFI.PdhIsRealTimeQuery(@handle) != 0
+      end
+
+      ##
+      # Adds a counter to this query and return it as a Counter object.
+      def add_counter(path)
+      end
+
+      def collect_query_data
+        status = PdhFFI.PdhCollectQueryData(@handle)
+        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+      end
     end
   end
 end
