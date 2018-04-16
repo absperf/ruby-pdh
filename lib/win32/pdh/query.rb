@@ -19,9 +19,11 @@ module Win32
       
       def close
         # Only allow closing once
-        status = PdhFFI.PdhCloseQuery(@handle) unless @handle.nil?
-        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
-        @handle = nil
+        unless @handle.nil?
+          status = PdhFFI.PdhCloseQuery(@handle)
+          raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+          @handle = nil
+        end
       end
 
       ##
@@ -35,7 +37,7 @@ module Win32
         query = new source
         if block_given?
           begin
-            yield query
+            return yield query
           ensure
             query.close
           end
@@ -45,12 +47,16 @@ module Win32
       end
 
       def real_time?
-        PdhFFI.PdhIsRealTimeQuery(@handle) != 0
+        PdhFFI.PdhIsRealTimeQuery(@handle) == :true
       end
 
       ##
       # Adds a counter to this query and return it as a Counter object.
       def add_counter(path)
+        Counter.new(
+          query: @handle,
+          path: path,
+        )
       end
 
       def collect_query_data
