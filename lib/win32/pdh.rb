@@ -4,6 +4,12 @@ require 'ffi'
 
 module Win32
   module Pdh
+    class PdhError < StandardError
+      def initialize(status)
+        super("PDH error #{Constants::NAMES[status]}: #{Constants::MESSAGES[status]}")
+      end
+    end
+
     ##
     # Takes a pointer to null-terminated utf-16 data and reads it into a utf-8 encoded string.
     #
@@ -21,9 +27,6 @@ module Win32
       end
 
       array.pack('n*').force_encoding('UTF-16BE').encode('UTF-8')
-    end
-
-    class PdhError < StandardError
     end
 
     module PdhFFI
@@ -107,7 +110,7 @@ module Win32
         )
       end
 
-      raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+      raise PdhError, status unless status == Constants::ERROR_SUCCESS
 
       string = listbuffer.read_bytes(listsize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
 
@@ -171,7 +174,7 @@ module Win32
         )
       end
 
-      raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+      raise PdhError, status unless status == Constants::ERROR_SUCCESS
 
       counterstring = counterbuffer.read_bytes(countersize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
       instancestring = instancebuffer.read_bytes(instancesize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
@@ -212,7 +215,7 @@ module Win32
         )
       end
 
-      raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+      raise PdhError, status unless status == Constants::ERROR_SUCCESS
 
       liststring = listbuffer.read_bytes(listsize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
 

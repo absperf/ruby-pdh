@@ -13,7 +13,7 @@ module Win32
           end
         handle_pointer = FFI::MemoryPointer.new(:pointer)
         status = PdhFFI.PdhOpenQueryW(source, FFI::Pointer::NULL, handle_pointer)
-        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+        raise PdhError, status unless status == Constants::ERROR_SUCCESS
         @handle = handle_pointer.read_pointer
       end
       
@@ -21,7 +21,7 @@ module Win32
         # Only allow closing once
         unless @handle.nil?
           status = PdhFFI.PdhCloseQuery(@handle)
-          raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+          raise PdhError, status unless status == Constants::ERROR_SUCCESS
           @handle = nil
         end
       end
@@ -61,7 +61,7 @@ module Win32
 
       def collect_query_data
         status = PdhFFI.PdhCollectQueryData(@handle)
-        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+        raise PdhError, status unless status == Constants::ERROR_SUCCESS
       end
     end
   end

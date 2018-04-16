@@ -44,7 +44,7 @@ module Win32
           FFI::Pointer::NULL,
           handle_pointer,
         )
-        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+        raise PdhError, status unless status == Constants::ERROR_SUCCESS
         @handle = handle_pointer.read_pointer
         load_info
       end
@@ -53,7 +53,7 @@ module Win32
         # Only allow removing once
         unless @handle.nil?
           status = PdhFFI.PdhRemoveCounter(@handle) unless @handle.nil?
-          raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+          raise PdhError, status unless status == Constants::ERROR_SUCCESS
           @handle = nil
         end
       end
@@ -67,7 +67,7 @@ module Win32
           buffer = FFI::Buffer.new(:uint16, buffersize.read_uint) unless status.nil?
           status = PdhFFI.PdhGetCounterInfoW(@handle, :false, buffersize, buffer)
         end
-        raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
+        raise PdhError, status unless status == Constants::ERROR_SUCCESS
 
         info = PDH_COUNTER_INFO.new(buffer)
         @type = info[:dwType]
@@ -83,6 +83,7 @@ module Win32
         @instance_index = counter_path[:dwInstanceIndex]
         @counter_name = Pdh.read_cwstr(counter_path[:szCounterName]).freeze
         @explain_text = Pdh.read_cwstr(info[:szExplainText]).freeze
+        raise PdhError, @status unless @status == Constants::ERROR_SUCCESS
       end
 
       def good?
