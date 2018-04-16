@@ -8,12 +8,12 @@ module Win32
     class Counter
       class PDH_COUNTER_PATH_ELEMENTS < FFI::Struct
         layout(
-          :szMachineName, :string,
-          :szObjectName, :string,
-          :szInstanceName, :string,
-          :szParentInstance, :string,
+          :szMachineName, :pointer,
+          :szObjectName, :pointer,
+          :szInstanceName, :pointer,
+          :szParentInstance, :pointer,
           :dwInstanceIndex, :uint,
-          :szCounterName, :string,
+          :szCounterName, :pointer,
         )
       end
       class PDH_COUNTER_INFO < FFI::Struct
@@ -26,9 +26,9 @@ module Win32
           :lDefaultScale, :uint,
           :dwUserData, :pointer,
           :dwQueryUserData, :pointer,
-          :szFullPath, :string,
+          :szFullPath, :pointer,
           :CounterPath, PDH_COUNTER_PATH_ELEMENTS,
-          :szExplainText, :string,
+          :szExplainText, :pointer,
           :DataBuffer, :uint,
         )
       end
@@ -64,8 +64,8 @@ module Win32
         buffer = FFI::Pointer::NULL
         status = nil
         while status.nil? || status == Constants::PDH_MORE_DATA
-          buffer = FFI::Buffer.new(:char, buffersize.read_uint) unless status.nil?
-          status = PdhFFI.PdhGetCounterInfoA(@handle, :false, buffersize, buffer)
+          buffer = FFI::Buffer.new(:uint16, buffersize.read_uint) unless status.nil?
+          status = PdhFFI.PdhGetCounterInfoW(@handle, :false, buffersize, buffer)
         end
         raise PdhError, "PDH error #{Constants::LOOKUP[status]}!" unless status == Constants::ERROR_SUCCESS
 
@@ -75,14 +75,18 @@ module Win32
         @status = info[:CStatus]
         @scale = info[:lScale]
         @default_scale = info[:lDefaultScale]
-        @full_path = info[:szFullPath].encode('UTF-8').freeze
+        @full_path = Pdh.read_cwstr(info[:szFullPath]).freeze
         counter_path = info[:CounterPath]
-        @machine_name = counter_path[:szMachineName].freeze
-        @object_name = counter_path[:szObjectName].freeze
-        @instance_name = counter_path[:szInstanceName].freeze
+        @machine_name = Pdh.read_cwstr(counter_path[:szMachineName]).freeze
+        @object_name = Pdh.read_cwstr(counter_path[:szObjectName]).freeze
+        @instance_name = Pdh.read_cwstr(counter_path[:szInstanceName]).freeze
         @instance_index = counter_path[:dwInstanceIndex]
-        @counter_name = counter_path[:szCounterName].freeze
-        @explain_text = info[:szExplainText].freeze
+        @counter_name = Pdh.read_cwstr(counter_path[:szCounterName]).freeze
+        @explain_text = Pdh.read_cwstr(info[:szExplainText]).freeze
+      end
+
+      def good?
+        @status == Constants::ERROR_SUCCESS
       end
     end
   end

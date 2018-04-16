@@ -4,6 +4,25 @@ require 'ffi'
 
 module Win32
   module Pdh
+    ##
+    # Takes a pointer to null-terminated utf-16 data and reads it into a utf-8 encoded string.
+    #
+    # If pointer is null, return nil instead of a string.
+    def self.read_cwstr(pointer)
+      return nil if pointer.null?
+      array = []
+      loop do
+        char = pointer.read_uint16
+        break if char == 0
+
+        array << char
+        # Need to proceed 2 bytes
+        pointer += 2
+      end
+
+      array.pack('n*').force_encoding('UTF-16BE').encode('UTF-8')
+    end
+
     class PdhError < StandardError
     end
 
@@ -28,7 +47,7 @@ module Win32
 
       # We use Ascii instead of Wide for this because reading null-terminated
       # utf-16 buffers with Ruby FFI is not easy.
-      attach_function :PdhGetCounterInfoA, [:pdh_hcounter, :winbool, :buffer_inout, :buffer_out], :pdh_status
+      attach_function :PdhGetCounterInfoW, [:pdh_hcounter, :winbool, :buffer_inout, :buffer_out], :pdh_status
       attach_function :PdhGetFormattedCounterArrayW, [:pdh_hcounter, :uint, :buffer_inout, :buffer_out, :buffer_out], :pdh_status
       attach_function :PdhGetFormattedCounterValue, [:pdh_hcounter, :uint, :buffer_out, :buffer_out], :pdh_status
       attach_function :PdhGetRawCounterArrayW, [:pdh_hcounter, :buffer_inout, :buffer_out, :buffer_out], :pdh_status
