@@ -2,7 +2,7 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'win32-pdh'
-  spec.version    = '0.0.2'
+  spec.version    = '0.1.0'
   spec.authors    = ['Taylor C. Richberger']
   spec.license    = 'MIT'
   spec.email      = 'tcr@absolute-performance.com'
@@ -11,6 +11,9 @@ Gem::Specification.new do |spec|
   spec.description = 'Ruby FFI interface for Windows PDH'
   spec.files      = [
     'lib/win32/pdh.rb'
+    'lib/win32/pdh/query.rb'
+    'lib/win32/pdh/counter.rb'
+    'lib/win32/pdh/constants.rb'
   ]
 
   spec.add_dependency('ffi')

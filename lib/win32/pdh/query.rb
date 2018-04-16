@@ -61,7 +61,7 @@ module Win32
 
       def collect_query_data
         status = PdhFFI.PdhCollectQueryData(@handle)
-        raise PdhError, status unless status == Constants::ERROR_SUCCESS
+        Pdh.check_status status
       end
     end
   end

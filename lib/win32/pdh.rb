@@ -11,6 +11,13 @@ module Win32
     end
 
     ##
+    # Simple convenience method that checks the status and raises an exception
+    # unless it's a successful status.
+    def self.check_status(status)
+      raise PdhError, status unless status == Constants::ERROR_SUCCESS
+    end
+
+    ##
     # Takes a pointer to null-terminated utf-16 data and reads it into a utf-8 encoded string.
     #
     # If pointer is null, return nil instead of a string.
@@ -110,7 +117,7 @@ module Win32
         )
       end
 
-      raise PdhError, status unless status == Constants::ERROR_SUCCESS
+      Pdh.check_status status
 
       string = listbuffer.read_bytes(listsize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
 
@@ -174,7 +181,7 @@ module Win32
         )
       end
 
-      raise PdhError, status unless status == Constants::ERROR_SUCCESS
+      Pdh.check_status status
 
       counterstring = counterbuffer.read_bytes(countersize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
       instancestring = instancebuffer.read_bytes(instancesize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
@@ -215,7 +222,7 @@ module Win32
         )
       end
 
-      raise PdhError, status unless status == Constants::ERROR_SUCCESS
+      Pdh.check_status status
 
       liststring = listbuffer.read_bytes(listsize.read_uint * 2).force_encoding('UTF-16LE').encode('UTF-8')
 
