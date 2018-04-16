@@ -10,10 +10,10 @@ Gem::Specification.new do |spec|
   spec.summary    = 'Interface for the MS Windows PDH counters'
   spec.description = 'Ruby FFI interface for Windows PDH'
   spec.files      = [
-    'lib/win32/pdh.rb'
-    'lib/win32/pdh/query.rb'
-    'lib/win32/pdh/counter.rb'
-    'lib/win32/pdh/constants.rb'
+    'lib/win32/pdh.rb',
+    'lib/win32/pdh/query.rb',
+    'lib/win32/pdh/counter.rb',
+    'lib/win32/pdh/constants.rb',
   ]
 
   spec.add_dependency('ffi')
