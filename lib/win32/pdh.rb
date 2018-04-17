@@ -76,6 +76,8 @@ module Win32
     # Uses PdhEnumObjects to enumerate objects at the given target.  Returns the
     # objects as an array of strings.
     #
+    # PdhEnumObjects: https://msdn.microsoft.com/en-us/library/windows/desktop/aa372600(v=vs.85).aspx
+    #
     # Params:
     # source:: The same as szDataSource
     # machine:: The same as szMachineName
@@ -137,6 +139,8 @@ module Win32
     ##
     # Enumerates an object's counter and instance names.  Returns an ItemEnum
     # with the results.
+    #
+    # Uses PdhEnumObjectItems: https://msdn.microsoft.com/en-us/library/windows/desktop/aa372595(v=vs.85).aspx
     def self.enum_object_items(object:, source: nil, machine: nil, detail: :novice)
       object = (object + "\0").encode('UTF-16LE')
       source =
@@ -203,6 +207,8 @@ module Win32
     # Expands a wildcard path into all matching counter paths.
     #
     # Returns a frozen array of frozen strings.
+    #
+    # Uses PdhExpandWildCardPath: https://msdn.microsoft.com/en-us/library/windows/desktop/aa372606(v=vs.85).aspx
     def self.expand_wildcards(path:, source: nil, expand_counters: true, expand_instances: true)
       path = (path + "\0").encode('UTF-16LE')
       source =

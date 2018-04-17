@@ -83,7 +83,10 @@ module Win32
       # This isn't necessary as a part of general cleanup, as closing a Query
       # will also clean up all counters.  This is necessary if you are doing
       # long-term management that may need counters added and removed while
-      # running.
+      # running.  So if you're using a Query as a one-off and it is being closed
+      # after use, don't bother with this.  If you are keeping a single query
+      # open long-term, make sure you use this when necessary, otherwise you
+      # will leak memory.
       def remove
         # Only allow removing once
         unless @handle.nil?
@@ -131,7 +134,12 @@ module Win32
       #
       # Usually, you won't use this directly; you'd use #get_double, #get_long,
       # or #get_large to get the formatted value without any hassle.
-      # This will raise an exception if the status is bad.
+      #
+      # Will raise a PdhError if the value is bad (if you've only run
+      # Query#collect_query_data once, but this counter requires a history to
+      # calculate a rate, this will raise an exception.  Be careful, and
+      # probably wrap all calls to this in an exception block that takes into
+      # account the possibility of a counter failing to get a value)
       def get(format)
         value = PDH_FMT_COUNTERVALUE.new
         status = PdhFFI.PdhGetFormattedCounterValue(
@@ -146,19 +154,25 @@ module Win32
       end
 
       ##
-      # Get value as a double
+      # Get value as a double.
+      #
+      # This uses #get, so read the notes in there about exception raising.
       def get_double
         get(Constants::PDH_FMT_DOUBLE)[:doubleValue]
       end
 
       ##
-      # Get value as a 64-bit integer
+      # Get value as a 64-bit integer.
+      #
+      # This uses #get, so read the notes in there about exception raising.
       def get_large
         get(Constants::PDH_FMT_LARGE)[:largeValue]
       end
 
       ##
       # Get value as a 32-bit integer
+      #
+      # This uses #get, so read the notes in there about exception raising.
       def get_long
         get(Constants::PDH_FMT_LONG)[:longValue]
       end
