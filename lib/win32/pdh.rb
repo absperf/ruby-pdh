@@ -4,6 +4,9 @@ require 'ffi'
 
 module Win32
   module Pdh
+    ##
+    # Simple error subclass.  Currently, this is what type all exceptions
+    # directly raised by this library are.
     class PdhError < StandardError
       def initialize(status)
         super("PDH error #{Constants::NAMES[status]}: #{Constants::MESSAGES[status]}")
@@ -36,6 +39,8 @@ module Win32
       array.pack('n*').force_encoding('UTF-16BE').encode('UTF-8')
     end
 
+    ##
+    # Container namespace for all Pdh functions.
     module PdhFFI
       extend FFI::Library
       ffi_lib 'Pdh.dll'
@@ -69,12 +74,12 @@ module Win32
 
     ##
     # Uses PdhEnumObjects to enumerate objects at the given target.  Returns the
-    # objects as a list.
+    # objects as an array of strings.
     #
     # Params:
-    # +source+:: The same as szDataSource
-    # +machine+:: The same as szMachineName
-    # +detail+:: Alias for dwDetailLevel, as a symbol.  May be :novice, :advanced, :expert, or :wizard.  Defaults to :novice.
+    # source:: The same as szDataSource
+    # machine:: The same as szMachineName
+    # detail:: Alias for dwDetailLevel, as a symbol.  May be :novice, :advanced, :expert, or :wizard.  Defaults to :novice.
     def self.enum_objects(source: nil, machine: nil, detail: :novice)
       source =
         if source.nil?
@@ -125,6 +130,8 @@ module Win32
       string.split("\0")
     end
 
+    ##
+    # Structure of instances and counters, for ::enum_object_items
     ItemEnum = Struct.new('ItemEnum', :instances, :counters)
 
     ##
@@ -194,6 +201,8 @@ module Win32
 
     ##
     # Expands a wildcard path into all matching counter paths.
+    #
+    # Returns a frozen array of frozen strings.
     def self.expand_wildcards(path:, source: nil, expand_counters: true, expand_instances: true)
       path = (path + "\0").encode('UTF-16LE')
       source =

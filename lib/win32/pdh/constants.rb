@@ -104,6 +104,7 @@ module Win32
       PERF_DETAIL_WIZARD = 400
       ERROR_SUCCESS = 0x00000000
 
+      # Value-to-name map, for reverse lookup.
       NAMES = {
         0x00000000 => 'PDH_CSTATUS_VALID_DATA'.freeze,
         0x00000001 => 'PDH_CSTATUS_NEW_DATA'.freeze,
@@ -193,6 +194,7 @@ module Win32
         0xC0000BFE => 'PDH_QUERY_PERF_DATA_TIMEOUT'.freeze,
       }.freeze
 
+      # Value-to-message hash, for generating messages.
       MESSAGES = {
         0x00000000 => 'The returned data is valid.'.freeze,
         0x00000001 => 'The return data value is valid and different from the last sample.'.freeze,

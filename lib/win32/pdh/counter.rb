@@ -5,7 +5,12 @@ require 'win32/pdh/constants'
 
 module Win32
   module Pdh
+    ##
+    # Class representing an individual counter.
+    #
+    # This won't usually be created directly, but built using Query#add_counter.
     class Counter
+      # https://msdn.microsoft.com/en-us/library/windows/desktop/aa373041(v=vs.85).aspx
       class PDH_COUNTER_PATH_ELEMENTS < FFI::Struct
         layout(
           :szMachineName, :pointer,
@@ -16,6 +21,7 @@ module Win32
           :szCounterName, :pointer,
         )
       end
+      # https://msdn.microsoft.com/en-us/library/windows/desktop/aa373038(v=vs.85).aspx
       class PDH_COUNTER_INFO < FFI::Struct
         layout(
           :dwLength, :uint,
@@ -33,6 +39,7 @@ module Win32
         )
       end
 
+      # https://msdn.microsoft.com/en-us/library/windows/desktop/aa373050(v=vs.85).aspx
       class PDH_FMT_COUNTERVALUE_VALUE < FFI::Union
         layout(
           :longValue, :int32,
@@ -43,6 +50,7 @@ module Win32
         )
       end
 
+      # https://msdn.microsoft.com/en-us/library/windows/desktop/aa373050(v=vs.85).aspx
       class PDH_FMT_COUNTERVALUE < FFI::Struct
         layout(
           :CStatus, :uint32,
@@ -52,6 +60,9 @@ module Win32
 
       attr_accessor :type, :version, :status, :scale, :default_scale, :full_path, :machine_name, :object_name, :instance_name, :instance_index, :counter_name, :explain_text
 
+      ##
+      # Initializes the counter from a query and a path.  This usually won't be
+      # called directly, but generated from Query#add_counter
       def initialize(query:, path:)
         path = (path + "\0").encode('UTF-16LE')
         handle_pointer = FFI::MemoryPointer.new(:pointer)
@@ -66,6 +77,13 @@ module Win32
         load_info
       end
       
+      ##
+      # Remove the counter from its Query.
+      #
+      # This isn't necessary as a part of general cleanup, as closing a Query
+      # will also clean up all counters.  This is necessary if you are doing
+      # long-term management that may need counters added and removed while
+      # running.
       def remove
         # Only allow removing once
         unless @handle.nil?
@@ -105,12 +123,15 @@ module Win32
         Pdh.check_status @status
       end
 
-      def good?
-        @status == Constants::ERROR_SUCCESS
-      end
+      private :load_info
 
+      ##
       # Get the PDH_FMT_COUNTERVALUE_VALUE given the format, checking status and
-      # raising an exception if necessary
+      # raising an exception if necessary.
+      #
+      # Usually, you won't use this directly; you'd use #get_double, #get_long,
+      # or #get_large to get the formatted value without any hassle.
+      # This will raise an exception if the status is bad.
       def get(format)
         value = PDH_FMT_COUNTERVALUE.new
         status = PdhFFI.PdhGetFormattedCounterValue(
