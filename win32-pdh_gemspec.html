@@ -61,6 +61,8 @@
   
     <li><a href="./Gemfile.html">Gemfile</a>
   
+    <li><a href="./Gemfile_lock.html">Gemfile.lock</a>
+  
     <li><a href="./LICENSE.html">LICENSE</a>
   
     <li><a href="./README_md.html">README</a>
@@ -82,7 +84,7 @@
 <p>Gem::Specification.new do |spec|</p>
 
 <pre class="ruby"><span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>       = <span class="ruby-string">&#39;win32-pdh&#39;</span>
-<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>    = <span class="ruby-string">&#39;0.1.1&#39;</span>
+<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>    = <span class="ruby-string">&#39;0.1.4&#39;</span>
 <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">authors</span>    = [<span class="ruby-string">&#39;Taylor C. Richberger&#39;</span>]
 <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">license</span>    = <span class="ruby-string">&#39;MIT&#39;</span>
 <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">email</span>      = <span class="ruby-string">&#39;tcr@absolute-performance.com&#39;</span>
@@ -96,7 +98,7 @@
   <span class="ruby-string">&#39;lib/win32/pdh/constants.rb&#39;</span>,
 ]
 
-<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">add_dependency</span>(<span class="ruby-string">&#39;ffi&#39;</span>)
+<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">add_dependency</span>(<span class="ruby-string">&#39;ffi&#39;</span>, <span class="ruby-string">&#39;~&gt;1.9&#39;</span>)
 </pre>
 
 <p>end</p>

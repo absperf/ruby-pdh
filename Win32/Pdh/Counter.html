@@ -319,7 +319,14 @@ href="Query.html#method-i-add_counter">Win32::Pdh::Query#add_counter</a></p>
   )
   <span class="ruby-constant">Pdh</span>.<span class="ruby-identifier">check_status</span> <span class="ruby-identifier">status</span>
   <span class="ruby-ivar">@handle</span> = <span class="ruby-identifier">handle_pointer</span>.<span class="ruby-identifier">read_pointer</span>
-  <span class="ruby-identifier">load_info</span>
+
+  <span class="ruby-comment"># Make sure we don&#39;t leak when we throw an exception</span>
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">load_info</span>
+  <span class="ruby-keyword">rescue</span>
+    <span class="ruby-identifier">remove</span>
+    <span class="ruby-identifier">raise</span>
+  <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -402,7 +409,7 @@ failing to get a value)</p>
 
           
           <div class="method-source-code" id="get-source">
-            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 143</span>
+            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 150</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get</span>(<span class="ruby-identifier">format</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">PDH_FMT_COUNTERVALUE</span>.<span class="ruby-identifier">new</span>
   <span class="ruby-identifier">status</span> = <span class="ruby-constant">PdhFFI</span>.<span class="ruby-constant">PdhGetFormattedCounterValue</span>(
@@ -447,7 +454,7 @@ there about exception raising.</p>
 
           
           <div class="method-source-code" id="get_double-source">
-            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 160</span>
+            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 167</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_double</span>
   <span class="ruby-identifier">get</span>(<span class="ruby-constant">Constants</span><span class="ruby-operator">::</span><span class="ruby-constant">PDH_FMT_DOUBLE</span>)[<span class="ruby-value">:doubleValue</span>]
 <span class="ruby-keyword">end</span></pre>
@@ -483,7 +490,7 @@ there about exception raising.</p>
 
           
           <div class="method-source-code" id="get_large-source">
-            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 168</span>
+            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 175</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_large</span>
   <span class="ruby-identifier">get</span>(<span class="ruby-constant">Constants</span><span class="ruby-operator">::</span><span class="ruby-constant">PDH_FMT_LARGE</span>)[<span class="ruby-value">:largeValue</span>]
 <span class="ruby-keyword">end</span></pre>
@@ -519,7 +526,7 @@ there about exception raising.</p>
 
           
           <div class="method-source-code" id="get_long-source">
-            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 176</span>
+            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 183</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get_long</span>
   <span class="ruby-identifier">get</span>(<span class="ruby-constant">Constants</span><span class="ruby-operator">::</span><span class="ruby-constant">PDH_FMT_LONG</span>)[<span class="ruby-value">:longValue</span>]
 <span class="ruby-keyword">end</span></pre>
@@ -561,7 +568,7 @@ memory.</p>
 
           
           <div class="method-source-code" id="remove-source">
-            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 90</span>
+            <pre><span class="ruby-comment"># File lib/win32/pdh/counter.rb, line 97</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">remove</span>
   <span class="ruby-comment"># Only allow removing once</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@handle</span>.<span class="ruby-identifier">nil?</span>
