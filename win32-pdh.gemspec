@@ -2,7 +2,7 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'win32-pdh'
-  spec.version    = '0.1.2'
+  spec.version    = '0.1.3'
   spec.authors    = ['Taylor C. Richberger']
   spec.license    = 'MIT'
   spec.email      = 'tcr@absolute-performance.com'
@@ -16,5 +16,5 @@ Gem::Specification.new do |spec|
     'lib/win32/pdh/constants.rb',
   ]
 
-  spec.add_dependency('ffi')
+  spec.add_dependency('ffi', '~>1.9.23')
 end
