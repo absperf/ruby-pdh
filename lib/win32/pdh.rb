@@ -21,22 +21,37 @@ module Win32
     end
 
     ##
+    # Gets the length of a cwstr (null-terminated UTF-16 string) in characters
+    # (16-bit units).
+    #
+    # Returns nil if the pointer is null
+    def self.strlen_cwstr(pointer)
+      return nil if pointer.null?
+
+      # Clone pointer, so we don't modify the original.
+      pointer = FFI::Pointer.new(pointer)
+      length = 0
+      until pointer.get_uint16(0) == 0
+        length += 1
+        # Need to proceed 2 bytes at a time; Ruby ffi gives no special pointer
+        # arithmetic by type.
+        pointer += 2
+      end
+
+      length
+    end
+
+    ##
     # Takes a pointer to null-terminated utf-16 data and reads it into a utf-8 encoded string.
     #
     # If pointer is null, return nil instead of a string.
     def self.read_cwstr(pointer)
       return nil if pointer.null?
-      array = []
-      loop do
-        char = pointer.read_uint16
-        break if char == 0
 
-        array << char
-        # Need to proceed 2 bytes
-        pointer += 2
-      end
+      # length in wchars
+      length = strlen_cwstr(pointer)
 
-      array.pack('n*').force_encoding('UTF-16BE').encode('UTF-8')
+      pointer.read_bytes(length * 2).force_encoding('UTF-16LE').encode('UTF-8')
     end
 
     ##

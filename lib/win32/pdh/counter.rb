@@ -74,7 +74,14 @@ module Win32
         )
         Pdh.check_status status
         @handle = handle_pointer.read_pointer
-        load_info
+
+        # Make sure we don't leak when we throw an exception
+        begin
+          load_info
+        rescue
+          remove
+          raise
+        end
       end
       
       ##
