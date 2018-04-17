@@ -58,7 +58,7 @@ module Win32
         )
       end
 
-      attr_accessor :type, :version, :status, :scale, :default_scale, :full_path, :machine_name, :object_name, :instance_name, :instance_index, :counter_name, :explain_text
+      attr_accessor :type, :version, :status, :scale, :default_scale, :full_path, :machine_name, :object_name, :instance_name, :parent_instance, :instance_index, :counter_name, :explain_text
 
       ##
       # Initializes the counter from a query and a path.  This usually won't be
@@ -127,6 +127,7 @@ module Win32
         @machine_name = Pdh.read_cwstr(counter_path[:szMachineName]).freeze
         @object_name = Pdh.read_cwstr(counter_path[:szObjectName]).freeze
         @instance_name = Pdh.read_cwstr(counter_path[:szInstanceName]).freeze
+        @parent_instance = Pdh.read_cwstr(counter_path[:szParentInstance]).freeze
         @instance_index = counter_path[:dwInstanceIndex]
         @counter_name = Pdh.read_cwstr(counter_path[:szCounterName]).freeze
         @explain_text = Pdh.read_cwstr(info[:szExplainText]).freeze
